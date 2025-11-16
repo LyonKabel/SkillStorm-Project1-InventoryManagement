@@ -50,6 +50,8 @@ public class WarehouseController {
         return warehouseRepo.findById(warehouseId)
             .map(warehouse -> {
                 warehouse.setName(updatedWarehouse.getName()); // update fields
+                warehouse.setLocation(updatedWarehouse.getLocation());
+                warehouse.setMaximumCapacity(updatedWarehouse.getMaximumCapacity());    
                 // add more fields to update
                 return warehouseRepo.save(warehouse); // save updated user
             })
@@ -64,6 +66,7 @@ public class WarehouseController {
             return "Warehouse not found with id " + warehouseId;
         }
         warehouseRepo.deleteById(warehouseId);
+        System.out.println("Deleting warehouse with id: " + warehouseId);
         return "Warehouse deleted with id " + warehouseId; // doesnt throw an exception because deleting something that doesnt exist is whatever
     }
 
