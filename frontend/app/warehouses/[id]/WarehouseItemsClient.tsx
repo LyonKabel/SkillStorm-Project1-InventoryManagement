@@ -14,6 +14,7 @@ export default function WarehouseItemsClient({ warehouseId }: { warehouseId: num
 
   const [newName, setNewName] = useState("");
   const [newQuantity, setNewQuantity] = useState<number>(0);
+  const [newDescription, setNewDescription] = useState("");
   const [search, setSearch] = useState("");
 
   // Fetch items
@@ -52,12 +53,13 @@ export default function WarehouseItemsClient({ warehouseId }: { warehouseId: num
     if (!newName || newQuantity <= 0) return toast.error("Fill all fields");
 
     try {
-      const newItem = await createItem(warehouseId, { name: newName, quantity: newQuantity });
+      const newItem = await createItem(warehouseId, { name: newName, quantity: newQuantity, description: newDescription });
       setItems([...items, newItem]);
       toast.success("Item created!");
       setShowCreateForm(false);
       setNewName("");
       setNewQuantity(0);
+      setNewDescription("");
     } catch (err) {
       console.error(err);
       toast.error("Failed to create item.");
@@ -121,6 +123,14 @@ export default function WarehouseItemsClient({ warehouseId }: { warehouseId: num
               value={newQuantity}
               onChange={(e) => setNewQuantity(Number(e.target.value))}
             />
+            {/* Description */}
+            <input
+              className="text-black border p-3 w-32 rounded-lg focus:ring-2 focus:ring-indigo-500"
+              type="text"
+              placeholder="Description"
+              value={newDescription}
+              onChange={(e) => setNewDescription(e.target.value)}
+            />
             <div className="flex gap-2">
               <button
                 className="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:bg-indigo-700 transition"
@@ -146,6 +156,7 @@ export default function WarehouseItemsClient({ warehouseId }: { warehouseId: num
             <tr>
               <th className="p-4 text-left border-b border-indigo-200">ID</th>
               <th className="p-4 text-left border-b border-indigo-200">Name</th>
+              <th className="p-4 text-left border-b border-indigo-200">Description</th>
               <th className="p-4 text-left border-b border-indigo-200">Quantity</th>
               <th className="p-4 text-left border-b border-indigo-200">Actions</th>
             </tr>
@@ -158,7 +169,14 @@ export default function WarehouseItemsClient({ warehouseId }: { warehouseId: num
               >
                 <td className="font-bold text-black p-4 border-b border-gray-200">{item.itemId}</td>
                 <td className="font-bold text-black p-4 border-b border-gray-200">{item.name}</td>
+                <td className="font-bold text-black p-4 border-b border-gray-200">
+                  {item.description.length > 50
+                    ? item.description.substring(0, 50) + "..."
+                    : item.description
+                  }
+                </td>
                 <td className="font-bold text-black p-4 border-b border-gray-200">{item.quantity}</td>
+                
                 <td className="font-bold text-black p-4 border-b border-gray-200">
                   <button
                     className="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-600 transition"

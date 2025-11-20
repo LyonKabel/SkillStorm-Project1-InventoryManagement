@@ -22,6 +22,8 @@ public class Item {
 
     private long quantity;
 
+    private String description;
+
     // MANY items belong to ONE warehouse
     @ManyToOne
     @JoinColumn(name = "warehouse_id")
@@ -33,11 +35,12 @@ public class Item {
 
     
 
-    public Item(Long itemId, String name, long quantity, Warehouse warehouse) {
+    public Item(Long itemId, String name, long quantity, Warehouse warehouse, String description) {
         this.itemId = itemId;
         this.name = name;
         this.quantity = quantity;
         this.warehouse = warehouse;
+        this.description = description;
     }
 
 
@@ -51,7 +54,21 @@ public class Item {
     public long getQuantity() { return quantity; }
     public void setQuantity(long quantity) { this.quantity = quantity; }
 
-    public Warehouse getWarehouse() { return warehouse; }
-    public void setWarehouse(Warehouse warehouse) { this.warehouse = warehouse; }
+    public Warehouse getWarehouse() { 
+        return warehouse; 
+    }
+    public void setWarehouse(Warehouse warehouse) { 
+        this.warehouse = warehouse; 
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    
 }
 
