@@ -20,6 +20,14 @@ public class User {
         return userId;
     }
 
+    public User(long userId, String name) {
+        this.userId = userId;
+        this.name = name;
+    }
+
+    public User() {
+    }
+
     public void setId(long userId) {
         this.userId = userId;
     }
