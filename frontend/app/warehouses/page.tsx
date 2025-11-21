@@ -121,7 +121,7 @@ export default function WarehousesPage() {
 
   };
 
-  // Filters by name only for now 
+  
   // Filters warehouses based on what is in the search bar
   const filteredWarehouses = warehouses.filter(w =>
       w.name.toLowerCase().includes(search.toLowerCase())

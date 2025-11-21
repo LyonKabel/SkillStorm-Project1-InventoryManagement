@@ -29,9 +29,7 @@ export default function Header() {
             <Link href="/warehouses" className="hover:text-indigo-200 transition">
                 Warehouses
             </Link>
-            <Link href="/analytics" className="hover:text-indigo-200 transition">
-                Analytics
-            </Link>
+
             <Link href="/settings" className="hover:text-indigo-200 transition">
                 Settings
             </Link>

@@ -7,6 +7,7 @@ import { Item } from "@/types/Item";
 import SearchBar from "@/app/Components/SearchBar/searchbar";
 import { Variant } from "@/types/Variant";
 import React from "react";
+import Link from "next/link";
 
 export default function WarehouseItemsClient({ warehouseId }: { warehouseId: number }) {
   const [items, setItems] = useState<Item[]>([]);
@@ -258,10 +259,9 @@ export default function WarehouseItemsClient({ warehouseId }: { warehouseId: num
           </span>
         </h2>
         <button
-          className="bg-gradient-to-r from-green-500 to-green-600 text-white px-5 py-2 rounded-lg shadow-lg hover:scale-105 transform transition flex items-center gap-2"
+          className="bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-2 rounded-lg shadow-lg hover:scale-105 transform transition"
           onClick={() => setShowCreateForm(true)}
-        >
-          + Add Item
+        > + Add Item
         </button>
       </div>
 
@@ -291,6 +291,7 @@ export default function WarehouseItemsClient({ warehouseId }: { warehouseId: num
                   value={v.size}
                   onChange={(e) => updateVariant(i, "size", e.target.value)}
                 >
+                  <option>One Size</option>
                   <option>X-Small</option>
                   <option>Small</option>
                   <option>Medium</option>
@@ -303,6 +304,7 @@ export default function WarehouseItemsClient({ warehouseId }: { warehouseId: num
                   value={v.color}
                   onChange={(e) => updateVariant(i, "color", e.target.value)}
                 >
+                  <option>One Color</option>
                   <option>Red</option>
                   <option>Blue</option>
                   <option>Green</option>
@@ -351,7 +353,14 @@ export default function WarehouseItemsClient({ warehouseId }: { warehouseId: num
               <th className="p-4 text-left border-b border-indigo-200">Name</th>
               <th className="p-4 text-left border-b border-indigo-200">Description</th>
               <th className="p-4 text-left border-b border-indigo-200">Quantity</th>
-              <th className="p-4 text-left border-b border-indigo-200">Actions</th>
+              <th className="p-4 text-left border-b border-indigo-200">
+                Actions
+                </th>
+                <th>
+                  <Link href={`/warehouses/${warehouseId}/analytics`}>Analytics</Link>
+                </th>
+                
+  
             </tr>
           </thead>
 

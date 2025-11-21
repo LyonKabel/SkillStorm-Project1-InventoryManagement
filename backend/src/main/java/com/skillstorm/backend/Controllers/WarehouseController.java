@@ -17,7 +17,7 @@ import com.skillstorm.backend.Repositories.WarehouseRepository;
 import com.skillstorm.backend.Warehouse;
 
 @RestController
-@RequestMapping("/warehouses") // The base of where the users will be in the url
+@RequestMapping("/warehouses") // The base of where the warehouses will be in the url
 @CrossOrigin(origins = "http://localhost:3000")
 public class WarehouseController {
     
