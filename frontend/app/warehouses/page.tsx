@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import toast, { Toaster } from "react-hot-toast";
-import { getWarehouses, createWarehouse, updateWarehouse, deleteWarehouse } from "@/lib/api";
+import { getWarehouses, createWarehouse, updateWarehouse, deleteWarehouse, getItems } from "@/lib/api";
 import { Warehouse } from "@/types/Warehouse";
 import { FiEdit, FiTrash2, FiPlus } from "react-icons/fi";
 import SearchBar from "../Components/SearchBar/searchbar";
@@ -20,11 +20,38 @@ export default function WarehousesPage() {
   const [maxCapacity, setMaxCapacity] = useState(0);
   const [search, setSearch] = useState("");
 
+  const [warehouseCapacities, setWarehouseCapacities] = useState<{[id: number]: number}>({});
+  
+
+  useEffect(() => {
+    const fetchCapacities = async () => {
+      const capacities: { [id: number]: number } = {};
+      await Promise.all(
+        warehouses.map(async (w) => {
+          if (w.warehouseId === undefined) return; // skip if no ID
+          try {
+            const items = await getItems(w.warehouseId);
+            const total = items.reduce((sum, i) => sum + i.quantity, 0);
+            capacities[w.warehouseId] = total;
+          } catch {
+            capacities[w.warehouseId] = 0;
+          }
+        })
+      );
+      setWarehouseCapacities(capacities);
+    };
+
+    if (warehouses.length > 0) fetchCapacities();
+  }, [warehouses]);
+
+
+
   useEffect(() => {
     const fetchWarehouses = async () => {
       try {
         const data = await getWarehouses();
         setWarehouses(Array.isArray(data) ? data : []);
+        console.log(data);
       } catch {
         toast.error("Failed to load warehouses.");
       } finally {
@@ -51,6 +78,21 @@ export default function WarehousesPage() {
   };
 
   const handleSubmit = async () => {
+    if (!name.trim()) {
+      return toast.error("Name is required.");
+    }
+    if (!location.trim()) {
+      return toast.error("Location is required.");
+    }
+    if (maxCapacity <= 0) {
+      return toast.error("Maximum capacity must be greater than 0.");
+    }
+    if (editingWarehouse?.warehouseId != null) {
+      const current = warehouseCapacities[editingWarehouse.warehouseId] || 0;
+      if (current > maxCapacity) {
+        return toast.error("New capacity cannot be less than current inventory.");
+      }
+    }
     try {
       if (editingWarehouse) {
         const updated = await updateWarehouse({ ...editingWarehouse, name, location, maximumCapacity: maxCapacity });
@@ -92,10 +134,10 @@ export default function WarehousesPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-50 p-8">
       
-      <SearchBar value={search} onChange={setSearch} placeholder="Search warehouses..." />
+      
       <Toaster position="top-right" />
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-4xl font-extrabold text-indigo-700">Warehouses</h1>
+        <SearchBar value={search} onChange={setSearch} placeholder="Search warehouses..." />
         <button
           onClick={openModalForCreate}
           className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-green-600 hover:scale-105 transform transition text-white px-6 py-3 rounded-lg shadow-lg"
@@ -115,7 +157,9 @@ export default function WarehousesPage() {
                 <div className="relative z-10">
                   <h2 className="text-2xl font-bold text-gray-800">{w.name}</h2>
                   <p className="text-gray-500 mt-1">Location: {w.location}</p>
-                  <p className="text-gray-500">Max Capacity: {w.maximumCapacity}</p>
+                  <p className="text-gray-500">
+                    Capacity: {w.warehouseId && warehouseCapacities[w.warehouseId] ? warehouseCapacities[w.warehouseId] : 0} / {w.maximumCapacity}
+                  </p>
 
                   <div className="flex gap-3 mt-4">
                     <button

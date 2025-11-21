@@ -1,13 +1,18 @@
 package com.skillstorm.backend;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -24,6 +29,10 @@ public class Item {
 
     private String description;
 
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Variant> variants = new ArrayList<>();
+
+
     // MANY items belong to ONE warehouse
     @ManyToOne
     @JoinColumn(name = "warehouse_id")
@@ -34,6 +43,18 @@ public class Item {
     }
 
     
+
+    public List<Variant> getVariants() {
+        return variants;
+    }
+
+
+
+    public void setVariants(List<Variant> variants) {
+        this.variants = variants;
+    }
+
+
 
     public Item(Long itemId, String name, long quantity, Warehouse warehouse, String description) {
         this.itemId = itemId;

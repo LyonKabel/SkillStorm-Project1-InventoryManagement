@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.skillstorm.backend.Item;
 import com.skillstorm.backend.Repositories.ItemRepository;
 import com.skillstorm.backend.Repositories.WarehouseRepository;
+import com.skillstorm.backend.Variant;
 import com.skillstorm.backend.Warehouse;
 
 @RestController
@@ -37,25 +38,57 @@ public class ItemController {
 
     // CREATE item in warehouse
     @PostMapping
-    public Item createItem(@PathVariable Long warehouseId, @RequestBody Item item) {
+    public Item createItem(
+        @PathVariable Long warehouseId,
+        @RequestBody Item item
+    ) {
         Warehouse warehouse = warehouseRepo.findById(warehouseId)
                 .orElseThrow(() -> new RuntimeException("Warehouse not found"));
 
         item.setWarehouse(warehouse);
+
+        // Set parent reference
+        item.getVariants().forEach(v -> v.setItem(item));
+
+        // Calculate total quantity
+        long totalQuantity = item.getVariants()
+            .stream()
+            .mapToLong(Variant::getQuantityVariant)
+            .sum();
+
+        item.setQuantity(totalQuantity);
+
         return itemRepo.save(item);
     }
 
     // UPDATE item
     @PutMapping("/{itemId}")
     public Item updateItem(
-            @PathVariable Long warehouseId,
-            @PathVariable Long itemId,
-            @RequestBody Item updatedItem) {
+        @PathVariable Long itemId,
+        @RequestBody Item updatedItem) {
 
         return itemRepo.findById(itemId)
                 .map(item -> {
                     item.setName(updatedItem.getName());
-                    item.setQuantity(updatedItem.getQuantity());
+                    item.setDescription(updatedItem.getDescription());
+
+                    // Clear old variants
+                    item.getVariants().clear();
+
+                    // Add new variants
+                    updatedItem.getVariants().forEach(v -> {
+                        v.setItem(item);
+                        item.getVariants().add(v);
+                    });
+
+                    // Recalculate total quantity
+                    long totalQuantity = item.getVariants()
+                        .stream()
+                        .mapToLong(Variant::getQuantityVariant)
+                        .sum();
+
+                    item.setQuantity(totalQuantity);
+
                     return itemRepo.save(item);
                 })
                 .orElseThrow(() -> new RuntimeException("Item not found"));
