@@ -2,8 +2,8 @@ package com.skillstorm.backend.Repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.skillstorm.backend.User;
+import com.skillstorm.backend.Variant;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface VariantRepository extends JpaRepository<Variant, Long> {
     
 }
